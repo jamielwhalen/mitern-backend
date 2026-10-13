@@ -1,0 +1,1 @@
+web: java -Dserver.port=$PORT -jar target/mitern-0.0.1-SNAPSHOT.jar
