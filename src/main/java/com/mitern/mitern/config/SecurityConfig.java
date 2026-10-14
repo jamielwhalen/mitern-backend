@@ -72,7 +72,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(
-                List.of("http://localhost:3000", "https://www.mitern.org")
+                List.of("http://localhost:3000", "https://www.mitern.org", "https://mitern.org")
         );
 
         config.setAllowedMethods(
