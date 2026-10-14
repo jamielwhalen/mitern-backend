@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>miTern Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 100px auto;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #message {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>miTern Registration</h2>
+
+<form id="registerForm">
+    <input
+            type="email"
+            id="email"
+            placeholder="Enter your email"
+            required
+    >
+
+    <button type="submit">Create Account</button>
+</form>
+
+<p id="message"></p>
+
+<script>
+    document.getElementById("registerForm")
+        .addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const message = document.getElementById("message");
+
+            message.textContent = "Creating account...";
+
+            try {
+
+                const csrfToken = document.cookie
+                    .split("; ")
+                    .find(cookie => cookie.startsWith("XSRF-TOKEN="))
+                    ?.split("=")[1];
+
+
+                const csrfResponse = await fetch("/api/csrf");
+                const csrf = await csrfResponse.json();
+
+                const response = await fetch("/api/users/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        [csrf.headerName]: csrf.token
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    message.textContent =
+                        result.message || "Account created!";
+                } else {
+                    message.textContent =
+                        result.error || "Registration failed.";
+                }
+
+            } catch (error) {
+                message.textContent =
+                    "Could not connect to the backend.";
+                console.error(error);
+            }
+        });
+</script>
+
+</body>
+</html>
