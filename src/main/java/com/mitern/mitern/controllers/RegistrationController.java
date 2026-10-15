@@ -4,6 +4,7 @@ package com.mitern.mitern.controllers;
 import java.util.Locale;
 import java.util.Map;
 
+import com.mitern.mitern.model.AccountType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,6 +31,7 @@ public class RegistrationController {
     public ResponseEntity<?> register(
             @RequestBody RegistrationRequest request) {
 
+        System.out.println("REGISTRATION CONTROLLER REACHED");
         String email = request.email() == null
                 ? ""
                 : request.email().trim()
@@ -59,9 +61,18 @@ public class RegistrationController {
                     .body(Map.of("error", "User already exists"));
         }
 
+        if (request.accountType() == null) {
+            throw new IllegalArgumentException("Account type is required");
+        }
+
+        String authority = switch (request.accountType()) {
+            case STUDENT -> "STUDENT";
+            case BUSINESS -> "BUSINESS";
+        };
+
         UserDetails user = User.withUsername(email)
                 .password(passwordEncoder.encode(password))
-                .roles("STUDENT")
+                .roles(authority)
                 .build();
 
         userDetailsManager.createUser(user);
@@ -75,6 +86,7 @@ public class RegistrationController {
 
     public record RegistrationRequest(
             String email,
-            String password
+            String password,
+            AccountType accountType
     ) {}
 }
