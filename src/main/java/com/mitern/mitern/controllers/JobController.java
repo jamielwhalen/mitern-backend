@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.mitern.mitern.model.AccountType.ADMIN;
+
 @RestController
 @RequestMapping("/api/jobs")
-@PreAuthorize("hasRole('BUSINESS')")
+@PreAuthorize("hasAnyRole('BUSINESS', 'ADMIN')")
 public class JobController {
 
     private final JobService jobService;
@@ -25,6 +27,15 @@ public class JobController {
     }
 
     @GetMapping
+    public List<Job> getAllJobs(Authentication authentication) {
+//        if(authentication.getAuthorities().contains(ADMIN.name())) {
+            return jobService.getAllJobs();
+//        } else {
+//            return null;
+//        }
+    }
+
+    @GetMapping("/myJobs")
     public List<Job> getMyJobs(Authentication authentication) {
         return jobService.getMyJobs(authentication.getName());
     }
@@ -34,9 +45,9 @@ public class JobController {
             @PathVariable Long id,
             Authentication authentication) {
 
+        System.out.println("HER MADE IT");
         return jobService.getJob(
-                id,
-                authentication.getName()
+                id
         );
     }
 
@@ -57,29 +68,29 @@ public class JobController {
                 .body(createdJob);
     }
 
-    @PutMapping("/{id}")
-    public Job updateJob(
-            @PathVariable Long id,
-            @Valid @RequestBody JobRequest request,
-            Authentication authentication) {
-
-        return jobService.updateJob(
-                id,
-                request,
-                authentication.getName()
-        );
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteJob(
-            @PathVariable Long id,
-            Authentication authentication) {
-
-        jobService.deleteJob(
-                id,
-                authentication.getName()
-        );
-
-        return ResponseEntity.noContent().build();
-    }
+//    @PutMapping("/{id}")
+//    public Job updateJob(
+//            @PathVariable Long id,
+//            @Valid @RequestBody JobRequest request,
+//            Authentication authentication) {
+//
+//        return jobService.updateJob(
+//                id,
+//                request,
+//                authentication.getName()
+//        );
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteJob(
+//            @PathVariable Long id,
+//            Authentication authentication) {
+//
+//        jobService.deleteJob(
+//                id,
+//                authentication.getName()
+//        );
+//
+//        return ResponseEntity.noContent().build();
+//    }
 }

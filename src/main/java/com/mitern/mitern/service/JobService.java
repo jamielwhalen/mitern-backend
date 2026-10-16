@@ -20,14 +20,18 @@ public class JobService {
         this.jobRepository = jobRepository;
     }
 
+    public List<Job> getAllJobs() {
+        return jobRepository
+                .findAll();
+    }
     public List<Job> getMyJobs(String email) {
         return jobRepository
                 .findByCreatedByOrderByCreatedAtDesc(email);
     }
 
-    public Job getJob(Long id, String email) {
+    public Job getJob(Long id) {
         return jobRepository
-                .findByIdAndCreatedBy(id, email)
+                .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Job not found"
@@ -48,7 +52,7 @@ public class JobService {
             JobRequest request,
             String email) {
 
-        Job job = getJob(id, email);
+        Job job = getJob(id);
 
         applyRequest(job, request);
 
@@ -56,7 +60,7 @@ public class JobService {
     }
 
     public void deleteJob(Long id, String email) {
-        Job job = getJob(id, email);
+        Job job = getJob(id);
         jobRepository.delete(job);
     }
 
