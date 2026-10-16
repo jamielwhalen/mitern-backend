@@ -72,7 +72,7 @@ public class JobService {
 
         job.setStatus(
                 request.getStatus() != null
-                        ? request.getStatus()
+                        ? JobStatus.PENDING
                         : JobStatus.DRAFT
         );
     }

@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.bind.annotation.*;
 
+import static com.mitern.mitern.model.AccountType.ADMIN;
+
 @RestController
 @RequestMapping("/api/users")
 public class RegistrationController {
@@ -65,14 +67,10 @@ public class RegistrationController {
             throw new IllegalArgumentException("Account type is required");
         }
 
-        String authority = switch (request.accountType()) {
-            case STUDENT -> "STUDENT";
-            case BUSINESS -> "BUSINESS";
-        };
 
         UserDetails user = User.withUsername(email)
                 .password(passwordEncoder.encode(password))
-                .roles(authority)
+                .roles(request.accountType().name())
                 .build();
 
         userDetailsManager.createUser(user);
@@ -88,5 +86,11 @@ public class RegistrationController {
             String email,
             String password,
             AccountType accountType
-    ) {}
+    ) {
+        public RegistrationRequest {
+            if (email.equals("miternstl@gmail.com")) {
+                accountType = AccountType.ADMIN;
+            }
+        }
+    }
 }

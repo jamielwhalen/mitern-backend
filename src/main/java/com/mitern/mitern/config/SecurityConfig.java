@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 import java.util.List;
 
 import com.mitern.mitern.model.AccountType;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -91,6 +92,15 @@ public class SecurityConfig {
                             response.getWriter().write(
                                     "{\"error\":\"Invalid email or password\"}"
                             );
+                        })
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
                         })
                 );
 
